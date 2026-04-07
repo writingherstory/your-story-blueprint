@@ -42,7 +42,7 @@
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
     pointer-events: none;
-    z-index: 1;
+    z-index: 9999;
     opacity: 0.4;
   }
 
@@ -846,16 +846,37 @@
 <body>
 
 <!-- ── EMAIL GATE ── -->
-<div id="gate" style="position:fixed;inset:0;background:#0A0A0A;z-index:9000;display:flex;align-items:center;justify-content:center;padding:24px;">
-  <div style="max-width:440px;width:100%;background:#1C1C1C;border:1px solid rgba(232,84,122,0.2);padding:44px 36px;">
-    <div style="font-family:'Syne Mono',monospace;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:#C9973A;margin-bottom:16px;">Writing HER Story Co. — Free Tool</div>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:700;color:#F5F5F0;line-height:1.1;margin-bottom:12px;">Your Story <em style="color:#E8547A;">Blueprint</em></div>
-    <div style="font-size:14px;color:#6A6060;line-height:1.7;margin-bottom:28px;">Pitch your journal idea and get an instant AI-powered blueprint — concept, structure, and a taste of your prompts. <strong style="color:#F2A0B5;">Free. No catch.</strong></div>
-    <input type="text" id="gateName" placeholder="First name" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-bottom:2px solid rgba(232,84,122,0.3);color:#F5F5F0;font-family:'Syne',sans-serif;font-size:14px;padding:13px 16px;outline:none;margin-bottom:10px;display:block;" />
-    <input type="email" id="gateEmail" placeholder="Email address" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-bottom:2px solid rgba(232,84,122,0.3);color:#F5F5F0;font-family:'Syne',sans-serif;font-size:14px;padding:13px 16px;outline:none;margin-bottom:16px;display:block;" />
-    <div id="gateErr" style="display:none;color:#FF6B8A;font-size:12px;margin-bottom:12px;">Please enter a valid email address.</div>
-    <button id="gateBtn" style="width:100%;background:#E8547A;color:#fff;border:none;padding:17px 24px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;">GET MY FREE BLUEPRINT PREVIEW →</button>
-    <div style="font-size:11px;color:#6A6060;margin-top:12px;line-height:1.5;">By signing up, you agree to receive updates from Writing HER Story Co. Unsubscribe anytime.</div>
+<div class="gate" id="gate">
+  <div class="gate-inner">
+    <div class="gate-eyebrow">Writing HER Story Co. — Free Tool</div>
+    <div class="gate-headline">Your Story<br><em>Blueprint</em></div>
+    <div class="gate-desc">
+      Pitch your journal idea and get an <strong>instant AI-powered blueprint</strong> — your concept, structure, and a taste of your prompts. Free. No catch.
+      <br><br>
+      Ready to go deeper? The full tool gives you everything.
+    </div>
+
+    <div class="gate-fields">
+      <input class="gate-input" type="text" id="gateName" placeholder="First name" />
+      <input class="gate-input" type="email" id="gateEmail" placeholder="Email address" onkeydown="if(event.key==='Enter') enterGate()" />
+    </div>
+    <button class="gate-cta" onclick="enterGate()">Get My Free Blueprint Preview →</button>
+    <div class="gate-fine">
+      By signing up, you agree to receive updates from Writing HER Story Co. Unsubscribe anytime. <a href="#">Privacy Policy</a>
+    </div>
+
+    <div class="gate-divider"></div>
+
+    <div class="gate-preview">
+      <div class="preview-chip">
+        <strong>✦ Free Preview</strong>
+        Concept · Structure · 5 prompts · Title ideas
+      </div>
+      <div class="preview-chip">
+        <strong>⬆ Full Tool Unlocks</strong>
+        60–90 prompts · KDP kit · Canva direction · More
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1046,29 +1067,32 @@
 <!-- ── FOOTER ── -->
 <footer class="site-footer">
   <span>© Writing HER Story Co. · Pink Hustle Society</span>
-  <span><a href="#">Privacy</a> · <a href="#"><span class="__cf_email__" data-cfemail="1b737e7777745b6b727570736e686f777e687478727e6f6235787476">[email&#160;protected]</span></a></span>
+  <span><a href="#">Privacy</a> · <a href="#"><span class="__cf_email__" data-cfemail="4a222f2626250a3a232421223f393e262f392529232f3e3364292527">[email&#160;protected]</span></a></span>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
   // ── USER STATE ──
   let userName = '';
   let selectedTone = 'Bold, direct, and unapologetic';
   let rawOutput = '';
 
   // ── GATE ──
-  document.getElementById('gateBtn').addEventListener('click', function() {
+  function enterGate() {
     const name = document.getElementById('gateName').value.trim();
     const email = document.getElementById('gateEmail').value.trim();
-    const err = document.getElementById('gateErr');
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      err.style.display = 'block';
+      document.getElementById('gateEmail').style.borderBottomColor = '#FF6B8A';
+      document.getElementById('gateEmail').placeholder = 'Please enter a valid email';
       return;
     }
-    err.style.display = 'none';
     userName = name || 'sis';
+    // Log to console — swap with real email service
     console.log('New free user:', { name, email, timestamp: new Date().toISOString() });
-    document.getElementById('gate').style.display = 'none';
-  });
+    const gate = document.getElementById('gate');
+    gate.classList.add('exit');
+    setTimeout(() => gate.style.display = 'none', 600);
+  }
 
   // ── CHIPS ──
   function pickChip(selectId, chipsId, el, val) {
@@ -1143,12 +1167,14 @@ Write exactly 5 powerful prompts from section one. Make them raw, specific, and 
 End the entire output with one italic sentence teasing what the full Journal Creator AI would build for this exact idea. Keep it specific to their pitch, not generic.`;
 
     try {
-      const res = await fetch('/api/generate', {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1200,
           system: systemPrompt,
-          user: userPrompt
+          messages: [{ role: 'user', content: userPrompt }]
         })
       });
 
@@ -1190,5 +1216,15 @@ End the entire output with one italic sentence teasing what the full Journal Cre
   }
 
   function dlOut() {
-    const blob = new Blob([rawOutput], { type: 'text/plain' });
-    const url = URL.cre
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'your-story-blueprint-preview.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  }); // end DOMContentLoaded
+</script>
+</body>
+</html>
